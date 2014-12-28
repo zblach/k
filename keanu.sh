@@ -10,7 +10,7 @@ k() {
   if [ -n "${ZSH_VERSION}" ]; then
     # ZSH
     # ksh_array option so zsh array[@] starts at 0
-    setopt ksh_arrays local_options
+    setopt ksh_arrays null_glob local_options
   # else
   #   # BASH
   fi
@@ -39,7 +39,6 @@ k() {
 
   # ----------------------------------------------------------------------------
   # Stat each file and loop through
-
   for file in .* *
   do
     typeset -a stat
@@ -50,12 +49,15 @@ k() {
 
     # Stat call on each file, the format matches
     # this list of file_names_vars above
+    OIFS=$IFS
+    IFS="^"
     stat=(
-      $(stat -L \
-      -f "%b %Sp %l %Su %Sg %z %Sm %N %SY" \
-      -t "%s %d %b %H:%M %Y" \
+      $(stat \
+      -f "%b^%Sp^%l^%Su^%Sg^%z^%Sm^%N^%SY" \
+      -t "%s^%d^%b^%H:%M^%Y" \
       ${file})
     )
+    IFS=$OIFS
 
     # Associative array of file_var_names and file_vars
     for stat_var in "${stat[@]}"
@@ -128,12 +130,12 @@ k() {
     # Check if file is executable
     if [[ ${permissions:3:1} == "x" || ${permissions:6:1} == "x" || ${permissions:9:1} == "x" ]]; then is_executable=1; fi
 
-    if (( is_directory ))
-    then
-      name=$'\e[1;34m'"$name"$'\e[0m'
-    elif (( is_symlink ))
+    if (( is_symlink ))
     then
       name=$'\e[0;35m'"$name"$'\e[0m'
+    elif (( is_directory ))
+    then
+      name=$'\e[1;34m'"$name"$'\e[0m'
     elif (( is_executable ))
     then
       name=$'\e[0;31m'"$name"$'\e[0m'
@@ -157,7 +159,6 @@ k() {
     # Cleanup so no file_vars are carried over if
     # missing from the next file
     unset -v stat file_vars i
-
   done
 }
 
