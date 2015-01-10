@@ -111,7 +111,7 @@ k() {
       elif [[ $sub_status == '??' ]]; then git_marker=$'\e[38;5;214m|\e[0m'; # Untracked
       elif [[ $sub_status == '!!' ]]; then git_marker=$'\e[38;5;238m|\e[0m'; # Ignored
       elif [[ $sub_status == 'A ' ]]; then git_marker=$'\e[38;5;093m|\e[0m'; # Added
-      else                             git_marker=$'\e[0;32m|\e[0m';     # Good
+      else                                 git_marker=$'\e[0;32m|\e[0m';     # Good
       fi
     fi
 
@@ -156,15 +156,7 @@ k() {
          $symlink_target
 
 
-    # Cleanup so no file_vars are carried over if
-    # missing from the next file
+    # Cleanup so file_vars are not carried over if missing from the next file
     unset -v stat file_vars i
   done
 }
-
-
-
-
-
-
-
